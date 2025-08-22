@@ -1,5 +1,5 @@
 <?php
-// Include the database connection file
+require_once 'lang/init.php';
 require_once 'config/db.php';
 
 // Check if the form was submitted
@@ -18,6 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Allow certain file formats
         $allowedTypes = array('jpg', 'jpeg', 'png', 'gif');
         if (in_array(strtolower($fileType), $allowedTypes)) {
+            // Check if the uploads directory exists, if not create it
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
             // Move the file to the uploads directory
             if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFilePath)) {
                 // Insert photo details into the database
@@ -26,24 +31,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($stmt->execute()) {
                     // Redirect to the gallery page
-                    header("Location: index.php?upload=success");
+                    header("Location: index.php?upload=success&lang=" . $lang_code);
                     exit();
                 } else {
-                    echo "Error: " . $stmt->error;
+                    echo "Error: " . $stmt->error; // This is a database error, so it's better to keep it in English for debugging
                 }
                 $stmt->close();
             } else {
-                echo "Sorry, there was an error uploading your file.";
+                echo $lang['upload_error_message'];
             }
         } else {
-            echo "Sorry, only JPG, JPEG, PNG, & GIF files are allowed.";
+            echo $lang['invalid_file_type_message'];
         }
     } else {
-        echo "No file was uploaded or there was an upload error.";
+        echo $lang['no_file_uploaded_message'];
     }
 } else {
     // If not a POST request, redirect to the homepage
-    header("Location: index.php");
+    header("Location: index.php?lang=" . $lang_code);
     exit();
 }
 

@@ -1,64 +1,73 @@
 <?php
-// Include the database connection file
+require_once 'lang/init.php';
 require_once 'config/db.php';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $lang_code; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imagine - Photo Hosting</title>
+    <title><?php echo $lang['site_title']; ?></title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <h1>Imagine</h1>
-        <p>Your personal photo gallery.</p>
+        <div class="container">
+            <div class="lang-switcher">
+                <a href="?lang=en">EN</a> | <a href="?lang=ru">RU</a>
+            </div>
+            <h1><?php echo $lang['header_title']; ?></h1>
+            <p><?php echo $lang['header_subtitle']; ?></p>
+        </div>
     </header>
 
     <main>
-        <section class="upload-form">
-            <h2>Upload a new photo</h2>
-            <form action="upload.php" method="post" enctype="multipart/form-data">
-                <label for="title">Title:</label>
-                <input type="text" name="title" id="title" required>
+        <div class="container">
+            <section class="upload-form">
+                <h2><?php echo $lang['upload_form_title']; ?></h2>
+                <form action="upload.php" method="post" enctype="multipart/form-data">
+                    <label for="title"><?php echo $lang['form_title_label']; ?></label>
+                    <input type="text" name="title" id="title" required>
 
-                <label for="description">Description:</label>
-                <textarea name="description" id="description" rows="4"></textarea>
+                    <label for="description"><?php echo $lang['form_description_label']; ?></label>
+                    <textarea name="description" id="description" rows="4"></textarea>
 
-                <label for="photo">Choose a photo:</label>
-                <input type="file" name="photo" id="photo" accept="image/*" required>
+                    <label for="photo"><?php echo $lang['form_photo_label']; ?></label>
+                    <input type="file" name="photo" id="photo" accept="image/*" required>
 
-                <button type="submit">Upload Photo</button>
-            </form>
-        </section>
+                    <button type="submit"><?php echo $lang['upload_button']; ?></button>
+                </form>
+            </section>
 
-        <section class="gallery">
-            <h2>Gallery</h2>
-            <div class="gallery-container">
-                <?php
-                // Fetch photos from the database
-                $result = $conn->query("SELECT * FROM photos ORDER BY uploaded_at DESC");
+            <section class="gallery">
+                <h2><?php echo $lang['gallery_title']; ?></h2>
+                <div class="gallery-container">
+                    <?php
+                    // Fetch photos from the database
+                    $result = $conn->query("SELECT * FROM photos ORDER BY uploaded_at DESC");
 
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo '<div class="gallery-item">';
-                        echo '<a href="photo.php?id=' . $row['id'] . '">';
-                        echo '<img src="uploads/' . htmlspecialchars($row['filename']) . '" alt="' . htmlspecialchars($row['title']) . '">';
-                        echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
-                        echo '</a>';
-                        echo '</div>';
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo '<div class="gallery-item">';
+                            echo '<a href="photo.php?id=' . $row['id'] . '&lang=' . $lang_code . '">';
+                            echo '<img src="uploads/' . htmlspecialchars($row['filename']) . '" alt="' . htmlspecialchars($row['title']) . '">';
+                            echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
+                            echo '</a>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<p>' . $lang['no_photos_message'] . '</p>';
                     }
-                } else {
-                    echo '<p>No photos uploaded yet. Be the first to upload!</p>';
-                }
-                ?>
-            </div>
-        </section>
+                    ?>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2023 Imagine</p>
+        <div class="container">
+            <p><?php echo $lang['footer_text']; ?></p>
+        </div>
     </footer>
 </body>
 </html>

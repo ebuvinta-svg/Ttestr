@@ -1,0 +1,22 @@
+<?php
+return [
+    'site_title' => 'Imagine - Photo Hosting',
+    'header_title' => 'Imagine',
+    'header_subtitle' => 'Your personal photo gallery.',
+    'upload_form_title' => 'Upload a new photo',
+    'form_title_label' => 'Title:',
+    'form_description_label' => 'Description:',
+    'form_photo_label' => 'Choose a photo:',
+    'upload_button' => 'Upload Photo',
+    'gallery_title' => 'Gallery',
+    'no_photos_message' => 'No photos uploaded yet. Be the first to upload!',
+    'footer_text' => '&copy; 2023 Imagine',
+    'photo_not_found_title' => 'Photo not found',
+    'photo_not_found_message' => 'Photo not found. <a href="index.php">Return to gallery</a>.',
+    'download_button' => 'Download Photo',
+    'upload_success_message' => 'Photo uploaded successfully!',
+    'upload_error_message' => 'Sorry, there was an error uploading your file.',
+    'invalid_file_type_message' => 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed.',
+    'no_file_uploaded_message' => 'No file was uploaded or there was an upload error.',
+];
+?>
