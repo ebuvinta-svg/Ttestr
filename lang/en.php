@@ -18,5 +18,7 @@ return [
     'upload_error_message' => 'Sorry, there was an error uploading your file.',
     'invalid_file_type_message' => 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed.',
     'no_file_uploaded_message' => 'No file was uploaded or there was an upload error.',
+    'delete_button' => 'Delete Photo',
+    'delete_confirm' => 'Are you sure you want to delete this photo?',
 ];
 ?>

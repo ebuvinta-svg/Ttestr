@@ -5,6 +5,8 @@
     --secondary-color: #6c757d;
     --success-color: #28a745;
     --success-hover-color: #218838;
+    --danger-color: #dc3545;
+    --danger-hover-color: #c82333;
     --light-gray-color: #f8f9fa;
     --dark-gray-color: #343a40;
     --text-color: #333;
@@ -12,6 +14,17 @@
     --background-color: #f4f4f4;
     --white-color: #fff;
     --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 body {
@@ -37,10 +50,12 @@ h1, h2, h3 {
 a {
     color: var(--primary-color);
     text-decoration: none;
+    transition: color 0.2s;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: var(--primary-hover-color);
+    text-decoration: none;
 }
 
 /* Header */
@@ -74,6 +89,7 @@ section {
     margin-bottom: 2rem;
     border-radius: 5px;
     box-shadow: var(--box-shadow);
+    transition: all 0.3s ease-in-out;
 }
 
 /* Upload Form */
@@ -96,6 +112,14 @@ section {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.upload-form input[type="text"]:focus,
+.upload-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 .upload-form button {
@@ -107,11 +131,12 @@ section {
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .upload-form button:hover {
     background-color: var(--primary-hover-color);
+    transform: scale(1.05);
 }
 
 
@@ -128,6 +153,7 @@ section {
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
 .gallery-item:hover {
@@ -140,6 +166,15 @@ section {
     height: 200px;
     object-fit: cover;
     display: block;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.gallery-item img.lazy {
+    opacity: 0;
+}
+
+.gallery-item img.loaded {
+    opacity: 1;
 }
 
 .gallery-item h3 {
@@ -162,6 +197,7 @@ footer {
 /* Photo View Page */
 .photo-container {
     text-align: center;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
 .photo-container img {
@@ -190,13 +226,41 @@ footer {
     border-radius: 5px;
     font-size: 1.1rem;
     text-decoration: none;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .download-btn:hover {
     background-color: var(--success-hover-color);
     text-decoration: none;
     color: var(--white-color);
+    transform: scale(1.05);
+}
+
+.photo-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.delete-btn {
+    display: inline-block;
+    background-color: var(--danger-color);
+    color: var(--white-color);
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    font-family: inherit;
+}
+
+.delete-btn:hover {
+    background-color: var(--danger-hover-color);
+    color: var(--white-color);
+    transform: scale(1.05);
 }
 
 /* Responsive Design */

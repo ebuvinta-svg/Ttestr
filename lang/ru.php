@@ -18,5 +18,7 @@ return [
     'upload_error_message' => 'Извините, при загрузке файла произошла ошибка.',
     'invalid_file_type_message' => 'Извините, разрешены только файлы JPG, JPEG, PNG и GIF.',
     'no_file_uploaded_message' => 'Файл не был загружен или произошла ошибка загрузки.',
+    'delete_button' => 'Удалить фото',
+    'delete_confirm' => 'Вы уверены, что хотите удалить это фото?',
 ];
 ?>

@@ -25,7 +25,7 @@ require_once 'config/db.php';
         <div class="container">
             <section class="upload-form">
                 <h2><?php echo $lang['upload_form_title']; ?></h2>
-                <form action="upload.php" method="post" enctype="multipart/form-data">
+                <form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data">
                     <label for="title"><?php echo $lang['form_title_label']; ?></label>
                     <input type="text" name="title" id="title" required>
 
@@ -37,11 +37,12 @@ require_once 'config/db.php';
 
                     <button type="submit"><?php echo $lang['upload_button']; ?></button>
                 </form>
+                <div id="upload-status"></div>
             </section>
 
             <section class="gallery">
                 <h2><?php echo $lang['gallery_title']; ?></h2>
-                <div class="gallery-container">
+                <div id="gallery-container" class="gallery-container">
                     <?php
                     // Fetch photos from the database
                     $result = $conn->query("SELECT * FROM photos ORDER BY uploaded_at DESC");
@@ -50,13 +51,14 @@ require_once 'config/db.php';
                         while ($row = $result->fetch_assoc()) {
                             echo '<div class="gallery-item">';
                             echo '<a href="photo.php?id=' . $row['id'] . '&lang=' . $lang_code . '">';
-                            echo '<img src="uploads/' . htmlspecialchars($row['filename']) . '" alt="' . htmlspecialchars($row['title']) . '">';
+                            // Use data-src for lazy loading
+                            echo '<img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="uploads/' . htmlspecialchars($row['filename']) . '" alt="' . htmlspecialchars($row['title']) . '">';
                             echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
                             echo '</a>';
                             echo '</div>';
                         }
                     } else {
-                        echo '<p>' . $lang['no_photos_message'] . '</p>';
+                        echo '<p class="no-photos-message">' . $lang['no_photos_message'] . '</p>';
                     }
                     ?>
                 </div>
@@ -69,5 +71,7 @@ require_once 'config/db.php';
             <p><?php echo $lang['footer_text']; ?></p>
         </div>
     </footer>
+
+    <script src="js/main.js" defer></script>
 </body>
 </html>
