@@ -57,6 +57,7 @@ $conn->close();
                             <a href="uploads/<?php echo htmlspecialchars($photo['filename']); ?>" download class="download-btn"><?php echo $lang['download_button']; ?></a>
                             <form action="delete.php" method="POST" style="display: inline;" onsubmit="return confirm('<?php echo $lang['delete_confirm']; ?>');">
                                 <input type="hidden" name="photo_id" value="<?php echo $photo['id']; ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                                 <button type="submit" class="delete-btn"><?php echo $lang['delete_button']; ?></button>
                             </form>
                         </div>

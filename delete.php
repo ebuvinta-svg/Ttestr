@@ -7,6 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['photo_id'])) {
     exit();
 }
 
+// CSRF Token validation
+if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    // Redirect or show an error
+    header('Location: index.php?deletion=error&reason=csrf');
+    exit();
+}
+
 $photo_id = (int)$_POST['photo_id'];
 
 // 1. Get the filename before deleting the DB record

@@ -20,5 +20,7 @@ return [
     'no_file_uploaded_message' => 'No file was uploaded or there was an upload error.',
     'delete_button' => 'Delete Photo',
     'delete_confirm' => 'Are you sure you want to delete this photo?',
+    'file_too_large_message' => 'Sorry, your file is too large. Maximum size is 5MB.',
+    'invalid_mime_type_message' => 'Sorry, the file type is not allowed.',
 ];
 ?>

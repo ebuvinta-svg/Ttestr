@@ -10,7 +10,11 @@ require_once 'config/db.php';
     <title><?php echo $lang['site_title']; ?></title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-csrf-token="<?php echo $csrf_token; ?>" data-lang-js='<?php echo json_encode([
+    "download_button" => $lang["download_button"],
+    "delete_button" => $lang["delete_button"],
+    "delete_confirm" => $lang["delete_confirm"]
+]); ?>'>
     <header>
         <div class="container">
             <div class="lang-switcher">
@@ -26,6 +30,7 @@ require_once 'config/db.php';
             <section class="upload-form">
                 <h2><?php echo $lang['upload_form_title']; ?></h2>
                 <form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                     <label for="title"><?php echo $lang['form_title_label']; ?></label>
                     <input type="text" name="title" id="title" required>
 
@@ -37,7 +42,6 @@ require_once 'config/db.php';
 
                     <button type="submit"><?php echo $lang['upload_button']; ?></button>
                 </form>
-                <div id="upload-status"></div>
             </section>
 
             <section class="gallery">
@@ -72,6 +76,17 @@ require_once 'config/db.php';
         </div>
     </footer>
 
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox-modal">
+        <div class="lightbox-content">
+            <span class="lightbox-close">&times;</span>
+            <div id="lightbox-photo-container">
+                <!-- Photo content will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js" defer></script>
+    <div id="toast-container"></div>
 </body>
 </html>

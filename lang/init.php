@@ -1,6 +1,14 @@
 <?php
 session_start();
 
+// --- CSRF Token ---
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
+
+// --- Language Selection ---
 // Default language is English
 $default_lang = 'en';
 

@@ -2,18 +2,6 @@
 require_once 'lang/init.php';
 require_once 'config/db.php';
 
-$is_ajax = isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    if ($is_ajax) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
-    } else {
-        header("Location: index.php?lang=" . $lang_code);
-    }
-    exit();
-}
-
 // --- Response helper ---
 function send_json_response($data) {
     header('Content-Type: application/json');
@@ -21,8 +9,17 @@ function send_json_response($data) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    send_json_response(['success' => false, 'message' => 'Invalid request method.']);
+}
 
 // --- Main logic ---
+
+// CSRF Token validation
+if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    send_json_response(['success' => false, 'message' => 'CSRF token validation failed.']);
+}
+
 $title = isset($_POST['title']) ? $_POST['title'] : '';
 $description = isset($_POST['description']) ? $_POST['description'] : '';
 
@@ -34,15 +31,33 @@ if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
     send_json_response(['success' => false, 'message' => $lang['no_file_uploaded_message']]);
 }
 
-$uploadDir = 'uploads/';
-$fileName = uniqid() . '_' . basename($_FILES['photo']['name']);
-$targetFilePath = $uploadDir . $fileName;
-$fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+// --- Security Validations ---
+$photo = $_FILES['photo'];
+$max_file_size = 5 * 1024 * 1024; // 5MB
 
-$allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-if (!in_array(strtolower($fileType), $allowedTypes)) {
-    send_json_response(['success' => false, 'message' => $lang['invalid_file_type_message']]);
+// 1. File size check
+if ($photo['size'] > $max_file_size) {
+    send_json_response(['success' => false, 'message' => $lang['file_too_large_message']]);
 }
+
+// 2. MIME type check
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$mime_type = $finfo->file($photo['tmp_name']);
+$allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif'];
+
+if (!in_array($mime_type, $allowed_mime_types)) {
+    send_json_response(['success' => false, 'message' => $lang['invalid_mime_type_message']]);
+}
+
+// 3. Sanitize filename
+$path_parts = pathinfo($photo['name']);
+$extension = isset($path_parts['extension']) ? '.' . strtolower($path_parts['extension']) : '';
+$filename_no_ext = preg_replace("/[^a-zA-Z0-9_-]/", "", $path_parts['filename']);
+$safe_filename = uniqid() . '_' . $filename_no_ext . $extension;
+
+
+$uploadDir = 'uploads/';
+$targetFilePath = $uploadDir . $safe_filename;
 
 if (!is_dir($uploadDir)) {
     if (!mkdir($uploadDir, 0755, true)) {
@@ -50,9 +65,9 @@ if (!is_dir($uploadDir)) {
     }
 }
 
-if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFilePath)) {
+if (move_uploaded_file($photo['tmp_name'], $targetFilePath)) {
     $stmt = $conn->prepare("INSERT INTO photos (title, description, filename) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $title, $description, $fileName);
+    $stmt->bind_param("sss", $title, $description, $safe_filename);
 
     if ($stmt->execute()) {
         $new_photo_id = $conn->insert_id;
@@ -62,12 +77,11 @@ if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFilePath)) {
             'photo' => [
                 'id' => $new_photo_id,
                 'title' => htmlspecialchars($title),
-                'filename' => htmlspecialchars($fileName)
+                'filename' => htmlspecialchars($safe_filename)
             ]
         ];
         send_json_response($response);
     } else {
-        // Log the detailed error, but send a generic message to the user
         error_log("Database error: " . $stmt->error);
         send_json_response(['success' => false, 'message' => 'A database error occurred.']);
     }
