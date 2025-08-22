@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     galleryItem.innerHTML = `
                         <a href="photo.php?id=${newPhoto.id}">
                             <img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="uploads/${newPhoto.filename}" alt="${newPhoto.title}">
-                            <h3>${newPhoto.title}</h3>
+                            <h3>${newPhoto.title} by ${newPhoto.username}</h3>
                         </a>
                     `;
                     const noPhotosMessage = galleryContainer.querySelector('.no-photos-message');

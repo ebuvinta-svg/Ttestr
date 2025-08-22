@@ -15,49 +15,50 @@ require_once 'config/db.php';
     "delete_button" => $lang["delete_button"],
     "delete_confirm" => $lang["delete_confirm"]
 ]); ?>'>
-    <header>
-        <div class="container">
-            <div class="lang-switcher">
-                <a href="?lang=en">EN</a> | <a href="?lang=ru">RU</a>
-            </div>
-            <h1><?php echo $lang['header_title']; ?></h1>
-            <p><?php echo $lang['header_subtitle']; ?></p>
-        </div>
-    </header>
+
+    <?php include 'partials/header.php'; ?>
 
     <main>
         <div class="container">
-            <section class="upload-form">
-                <h2><?php echo $lang['upload_form_title']; ?></h2>
-                <form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                    <label for="title"><?php echo $lang['form_title_label']; ?></label>
-                    <input type="text" name="title" id="title" required>
-
-                    <label for="description"><?php echo $lang['form_description_label']; ?></label>
-                    <textarea name="description" id="description" rows="4"></textarea>
-
-                    <label for="photo"><?php echo $lang['form_photo_label']; ?></label>
-                    <input type="file" name="photo" id="photo" accept="image/*" required>
-
-                    <button type="submit"><?php echo $lang['upload_button']; ?></button>
-                </form>
-            </section>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <section class="upload-form">
+                    <h2><?php echo $lang['upload_form_title']; ?></h2>
+                    <form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                        <div class="form-group">
+                            <label for="title"><?php echo $lang['form_title_label']; ?></label>
+                            <input type="text" name="title" id="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description"><?php echo $lang['form_description_label']; ?></label>
+                            <textarea name="description" id="description" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="photo"><?php echo $lang['form_photo_label']; ?></label>
+                            <input type="file" name="photo" id="photo" accept="image/*" required>
+                        </div>
+                        <button type="submit" class="btn"><?php echo $lang['upload_button']; ?></button>
+                    </form>
+                </section>
+            <?php else: ?>
+                <section class="public-welcome">
+                    <h2>Welcome to Imagine!</h2>
+                    <p>Your personal photo gallery. Please <a href="login.php">login</a> or <a href="register.php">register</a> to upload your photos.</p>
+                </section>
+            <?php endif; ?>
 
             <section class="gallery">
-                <h2><?php echo $lang['gallery_title']; ?></h2>
+                <h2>Public Gallery</h2>
                 <div id="gallery-container" class="gallery-container">
                     <?php
-                    // Fetch photos from the database
-                    $result = $conn->query("SELECT * FROM photos ORDER BY uploaded_at DESC");
+                    $result = $conn->query("SELECT p.id, p.filename, p.title, u.username FROM photos p JOIN users u ON p.user_id = u.id ORDER BY p.uploaded_at DESC");
 
                     if ($result && $result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo '<div class="gallery-item">';
                             echo '<a href="photo.php?id=' . $row['id'] . '&lang=' . $lang_code . '">';
-                            // Use data-src for lazy loading
                             echo '<img class="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="uploads/' . htmlspecialchars($row['filename']) . '" alt="' . htmlspecialchars($row['title']) . '">';
-                            echo '<h3>' . htmlspecialchars($row['title']) . '</h3>';
+                            echo '<h3>' . htmlspecialchars($row['title']) . ' by ' . htmlspecialchars($row['username']) . '</h3>';
                             echo '</a>';
                             echo '</div>';
                         }
@@ -76,13 +77,10 @@ require_once 'config/db.php';
         </div>
     </footer>
 
-    <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="lightbox-modal">
         <div class="lightbox-content">
             <span class="lightbox-close">&times;</span>
-            <div id="lightbox-photo-container">
-                <!-- Photo content will be loaded here by JavaScript -->
-            </div>
+            <div id="lightbox-photo-container"></div>
         </div>
     </div>
 
